@@ -1,11 +1,15 @@
 import React from 'react'
 import { useListTenantsQuery } from 'src/store/api/tenants'
-import SelectSearch, { fuzzySearch } from 'react-select-search'
+import Select from 'react-select'
 import PropTypes from 'prop-types'
 
 const TenantSelectorMultiple = React.forwardRef(
   ({ values = [], onChange = () => {}, ...rest }, ref) => {
-    const { data: tenants = [], isLoading, error } = useListTenantsQuery()
+    const {
+      data: tenants = [],
+      isLoading,
+      error,
+    } = useListTenantsQuery({ showAllTenantsSelector: false })
 
     let placeholder = 'Select Tenants'
     if (isLoading) {
@@ -13,23 +17,25 @@ const TenantSelectorMultiple = React.forwardRef(
     } else if (error) {
       placeholder = 'Error loading tenants'
     }
-
+    const mappedValue = values.map((val) => val.value)
     return (
-      <SelectSearch
+      <Select
+        className="react-select-container"
+        classNamePrefix="react-select"
         ref={ref}
-        search
+        isMulti={true}
         onChange={onChange}
-        filterOptions={fuzzySearch}
         placeholder={placeholder}
-        value={values}
+        value={mappedValue.value}
+        getOptionLabel={(option) => option.label}
+        getOptionValue={(option) => option.value}
         disabled={isLoading}
         options={tenants.map(({ customerId, defaultDomainName, displayName }) => ({
           value: customerId,
-          name: [displayName] + [` (${defaultDomainName})`],
+          label: [displayName] + [` (${defaultDomainName})`],
         }))}
         multiple
         printOptions="on-focus"
-        closeOnSelect={false}
         {...rest}
       />
     )

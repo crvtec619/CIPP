@@ -10,7 +10,6 @@ import {
   CForm,
   CRow,
   CSpinner,
-  CAlert,
 } from '@coreui/react'
 import useQuery from 'src/hooks/useQuery'
 import { useDispatch } from 'react-redux'
@@ -58,11 +57,20 @@ const EditMailboxPermission = () => {
   }, [userId, tenantDomain, dispatch])
   const [genericPostRequest, postResults] = useLazyGenericPostRequestQuery()
   const onSubmit = (values) => {
+    if (values.AddFullAccess) {
+      values.AddFullAccess = values.AddFullAccess.value
+    }
     if (!values.AddFullAccess) {
       values.AddFullAccess = ''
     }
+    if (values.RemoveFullAccess) {
+      values.RemoveFullAccess = values.RemoveFullAccess.value
+    }
     if (!values.RemoveFullAccess) {
       values.RemoveFullAccess = ''
+    }
+    if (values.AddFullAccessNoAutoMap) {
+      values.AddFullAccessNoAutoMap = values.AddFullAccessNoAutoMap.value
     }
     if (!values.AddFullAccessNoAutoMap) {
       values.AddFullAccessNoAutoMap = ''
@@ -86,7 +94,9 @@ const EditMailboxPermission = () => {
     <CCard className="page-card">
       {!queryError && (
         <>
-          {postResults.isSuccess && <CAlert color="success">{postResults.data?.Results}</CAlert>}
+          {postResults.isSuccess && (
+            <CCallout color="success">{postResults.data?.Results}</CCallout>
+          )}
           {queryError && (
             <CRow>
               <CCol md={12}>
@@ -170,7 +180,7 @@ const EditMailboxPermission = () => {
                               </CCol>
                             </CRow>
                             {postResults.isSuccess && (
-                              <CAlert color="success">{postResults.data?.Results}</CAlert>
+                              <CCallout color="success">{postResults.data?.Results}</CCallout>
                             )}
                           </CForm>
                         )
